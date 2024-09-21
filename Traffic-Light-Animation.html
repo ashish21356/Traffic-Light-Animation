@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Light Animation</title>
+  <style>
+   body {
+  background-color: white;
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0; /* Remove padding */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+    .darkbody {
+      background-color: #222;
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+  #container {
+  width: 98%; /* Full width */
+  height: 60px;
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  border: 2px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+  margin-left: 10px;
+  overflow: hidden; /* Prevent content overflow */
+}
+
+    #animate {
+      width: 100px;
+      height: 30px;
+      position: absolute;
+      background-color: transparent;
+      margin-top: 15px;
+      border: 1px solid red;
+      border-radius: 25px 0 0 25px;
+      transition: left 0.1s; /* Smooth movement */
+    }
+
+    .wheel {
+      width: 15px;
+      height: 15px;
+      position: absolute;
+      background-color: black;
+      border-radius: 50%;
+    }
+
+    .wheel-front-left {
+      left: 15px;
+      bottom: -10px;
+    }
+
+    .wheel-front-right {
+      right: 15px;
+      bottom: -10px;
+    }
+
+    .headlight {
+      width: 8px;
+  height: 8px;
+  position: absolute;
+  background-color: #ffffff;
+  box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.8); /* Glowing effect */
+    }
+
+    .headlight-left {
+      left: 98px;
+      top: 15px;
+      border-radius: 0 50px 50px 0;
+    }
+
+    .headlight-right {
+      right: 100px;
+      top: 15px;
+      border-radius: 50px 0 0 50px;
+    }
+
+    .light-beam-left,
+    .light-beam-right {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-color: rgba(255, 255, 100, 0.3);
+      z-index: -1;
+      opacity: 0.8; /* Make the beam more transparent */
+    }
+
+    .light-beam-right {
+      right: 90px;
+      top: 12px;
+      width: 0;
+      height: 0;
+      border-right: 15px solid transparent;
+      border-left: 15px solid transparent;
+      border-top: 10px solid tan;
+      z-index: 1;
+      transform: rotate(-90deg);
+    }
+
+    .column-container {
+      display: flex;
+      flex-direction: column;
+      width: 150px;
+      margin-left: 150px;
+    }
+
+    .light {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid #333;
+      margin: 20px 5px;
+      transition: background-color 0.5s; /* Smooth color transition */
+    }
+
+    .light-pole {
+      width: 10px;
+      height: 100px;
+      background-color: #333;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .green {
+      background-color: green;
+    }
+
+    .yellow {
+      background-color: yellow;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #themeButton {
+      background-color: #2ecc71;
+    }
+
+    #themeButton:hover {
+      background-color: #27ae60;
+    }
+
+   
+.sun {
+  width: 60px;
+  height: 60px;
+  background-color: yellow;
+  border-radius: 50%;
+  position: absolute;
+  top: 320px;
+  left: 920px;
+  box-shadow: 0 0 150px rgba(255, 255, 0, 0.5),
+
+}
+
+.moon {
+  width: 60px;
+  height: 60px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 320px;
+  left: 920px;
+  box-shadow: inset 175px 0 0 rgba(255, 255, 255, 0.5), /* Inner glow */
+                0 0 20px rgba(255, 255, 255, 0.8), /* Outer glow */
+                0 0 40px rgba(255, 255, 255, 0.6); /* Stronger outer glow */
+}
+ /* Common Star CSS */
+.star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    width: 5px;
+    height: 5px;
+    animation: blink 1.5s infinite alternate, glow 2s infinite alternate;
+    box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.8);
+}
+
+/* Keyframes for blinking effect */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Keyframes for glowing effect */
+@keyframes glow {
+    0% { box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.8); }
+    50% { box-shadow: 0 0 15px 5px rgba(255, 255, 255, 1); }
+    100% { box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.8); }
+}
+
+    </style>
+  
+</head>
+
+<body id="body" class="body">
+
+  <h1>Traffic Light Animation</h1> <p><button id="themeButton" onclick="theme()">Dark</button></p>
+  <label for="green_interval">Green Interval (ms):</label>
+  <input type="number" id="green_interval" name="green_interval" required>
+  <br>
+  <label for="yellow_interval">Yellow Interval (ms):</label>
+  <input type="number" id="yellow_interval" name="yellow_interval" required>
+  <br>
+  <label for="red_interval">Red Interval (ms):</label>
+  <input type="number" id="red_interval" name="red_interval" required>
+  <br>
+
+  <button onclick="startButton()">Start</button>
+  <button type="button" onclick="stopButton()">Stop</button>
+  <p><button onclick="myMove()">Click to Move</button></p>
+
+  <div class="column-container">
+    <div class="light-pole">
+      <div class="light-box">
+        <div id="lightA" class="light"></div>
+      </div>
+    </div>
+  </div>
+  <div id="stars-container">
+    <div class="star" style="top: 150px; left: 1200px;"></div>
+    <div class="star" style="top: 180px; left: 1000px;"></div>
+    <div class="star" style="top: 400px; left: 900px;"></div>
+    <div class="star" style="top: 350px; left: 700px;"></div>
+    <div class="star" style="top: 190px; left: 750px;"></div>
+    <!-- Adding more stars -->
+<div class="star" style="top: 100px; left: 1300px;"></div>
+<div class="star" style="top: 220px; left: 1100px;"></div>
+<div class="star" style="top: 370px; left: 600px;"></div>
+<div class="star" style="top: 420px; left: 800px;"></div>
+<div class="star" style="top: 250px; left: 550px;"></div>
+</div>
+
+  <div id="themeIcon" class="sun"></div>
+  <div id="container">
+    <div id="animate">
+      <div class="wheel wheel-front-left"></div>
+      <div class="wheel wheel-front-right"></div>
+      <div class="headlight headlight-left"></div>
+      <div class="headlight headlight-right"></div>
+      <div class="light-beam-left"></div>
+      <div id="light-beam-right" name="light-beam-right" class="light-beam-right"></div>
+    </div>
+  </div>
+
+  <script>
+    let id = null;
+    let isWaiting = false;
+
+    var timer;
+
+    function startButton() {
+      var green_interval = parseInt(document.getElementById('green_interval').value, 10);
+      var yellow_interval = parseInt(document.getElementById('yellow_interval').value, 10);
+      var red_interval = parseInt(document.getElementById('red_interval').value, 10);
+      var light = document.getElementById('lightA');
+
+      if (isNaN(green_interval) || isNaN(yellow_interval) || isNaN(red_interval) ||
+        green_interval <= 0 || yellow_interval <= 0 || red_interval <= 0) {
+          alert("Please provide all intervals")
+        return;
+      }
+
+      clearInterval(timer);
+
+      timer = setInterval(function () {
+        if (light) {
+          light.classList.remove('yellow', 'red');
+          light.classList.add('green');
+
+          setTimeout(function () {
+            light.classList.remove('green');
+            light.classList.add('yellow');
+
+            setTimeout(function () {
+              light.classList.remove('yellow');
+              light.classList.add('red');
+            }, yellow_interval);
+
+          }, green_interval);
+        }
+      }, green_interval + yellow_interval + red_interval);
+    }
+
+    function stopButton() {
+      clearInterval(timer);
+    }
+
+    function theme() {
+      var bodyElement = document.getElementById("body");
+      var button = document.getElementById("themeButton");
+      var beamElement = document.getElementById("light-beam-right");
+      var themeIcon = document.getElementById("themeIcon");
+
+      if (bodyElement.classList.contains("darkbody")) {
+        bodyElement.classList.remove("darkbody");
+        beamElement.classList.remove("light-beam-right");
+        themeIcon.classList.remove("moon");
+        themeIcon.classList.add("sun");
+        button.innerHTML = "Dark";
+    } else {
+        bodyElement.classList.add("darkbody");
+        beamElement.classList.add("light-beam-right");
+        themeIcon.classList.remove("sun");
+        themeIcon.classList.add("moon");
+        button.innerHTML = "Light";
+    }
+    }
+
+    function myMove() {
+      let elem = document.getElementById("animate");
+      let pos = 1100; // Start position
+
+      clearInterval(id); // Clear any existing animation interval
+      id = setInterval(frame, 10); // Move frame by frame
+
+      function frame() {
+        const light = document.getElementById("lightA");
+
+        if (pos <= 0) {
+          clearInterval(id); // Stop the animation when it reaches the leftmost position
+        } else if (pos === 200 && light.classList.contains('red')) {
+          console.log("Animation paused at position 200 due to red light");
+          isWaiting = true; // Set the waiting flag to pause movement
+        }
+
+        if (isWaiting && (light.classList.contains('green') || light.classList.contains('yellow'))) {
+          console.log("Animation resumed as light turned green or yellow");
+          isWaiting = false; // Reset the waiting flag
+        }
+
+        if (!isWaiting) {
+          pos--; // Move the vehicle
+          elem.style.left = pos + "px"; // Update the position
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
